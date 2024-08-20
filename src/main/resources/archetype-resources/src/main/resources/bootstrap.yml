@@ -1,0 +1,195 @@
+#set( $dollar = '$' )
+spring:
+  application:
+    name: { artifactId }
+  profiles:
+    active:
+      - dev
+  cloud:
+    config:
+      enabled: false
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
+server:
+  port: 8080
+  shutdown: graceful
+  servlet:
+    context-path: /${spring.application.name}
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+  tomcat:
+    connection-timeout: 2s
+    keep-alive-timeout: 10s
+    threads:
+      max: 500
+      min-spare: 100
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 2048
+
+management:
+  server:
+    port: 9090
+  context-path: /actuator
+  info:
+    java:
+      enabled: true
+    env:
+      enabled: true
+  endpoints:
+    jmx:
+      exposure:
+        include: health,info
+    web:
+      exposure:
+        include: "*"
+        exclude: env,beans,shutdown
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+        add-additional-paths: true # Enable more context probe. Ex: http://localhost:8080/${dollar}{artifactId}/readyz | livez
+    shutdown:
+      enabled: false
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+    circuitbreakers:
+      enabled: true
+    ratelimiters:
+      enabled: true
+  metrics:
+    distribution:
+      slo:
+        http:
+          server:
+            requests: 100ms,150ms,250ms,500ms,1s
+      percentiles:
+        http:
+          server:
+            requests: 0.5, 0.9, 0.95, 0.99, 0.999
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+    enable:
+      jvm: true
+    tags:
+      application: ${dollar}{spring.application.name}
+  datadog:
+    metrics:
+      export:
+        enabled: true
+        step: 1m
+        host-tag: ${dollar}{spring.application.name}.app.tld
+        api-key: ${dollar}{DATADOG_KEY:vault}
+  tracing:
+    enabled: true
+    propagation:
+      type:
+        - w3c
+    baggage:
+      enabled: true
+    sampling:
+      probability: 1.0
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      CircuitBreakerService:
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 5s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: count_based
+  retry:
+    instances:
+      retryApi:
+        max-attempts: 3
+        wait-duration: 1s
+    metrics:
+      enabled: true
+      legacy:
+        enabled: true
+  timelimiter:
+    metrics:
+      enabled: true
+    instances:
+      timeLimiterApi:
+        timeout-duration: 2s
+        cancel-running-future: true
+  bulkhead:
+    metrics:
+      enabled: true
+    instances:
+      bulkheadApi:
+        max-concurrent-calls: 3
+        max-wait-duration: 1
+  ratelimiter:
+    metrics:
+      enabled: true
+    instances:
+      rateLimiterApi:
+        register-health-indicator: true
+        limit-for-period: 5
+        limit-refresh-period: 60s
+        timeout-duration: 0s
+        allow-health-indicator-to-fail: true
+        subscribe-for-events: true
+        event-consumer-buffer-size: 50
+
+springdoc:
+  use-management-port: true
+  show-actuator: true
+  swagger-ui:
+    operationsSorter: alpha
+    tagsSorter: alpha
+    displayRequestDuration: true
+
+logbook:
+  predicate:
+    include:
+      - path: /${spring.application.name}/**
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - PATCH
+      - path: /actuator/**
+    exclude:
+      - path: /actuator/health
+      - path: /${spring.application.name}/admin/**
+        methods:
+          - POST
+  filter:
+    enabled: true
+  secure-filter:
+    enabled: true
+  strategy: body-only-if-status-at-least
+  minimum-status: 400
+  obfuscate:
+    headers:
+      - Authorization
+      - X-Secret
+    parameters:
+      - access_token
+      - password
+  write:
+    chunk-size: 1000
+
+logging:
+  level:
+    org:
+      zalando:
+        logbook:
+          Logbook: TRACE

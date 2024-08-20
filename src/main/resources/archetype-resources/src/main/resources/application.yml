@@ -1,0 +1,19 @@
+#set( $dollar = '$' )
+spring:
+  application:
+    name: ${artifactId}
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    serialization:
+      write_dates_as_timestamps: false
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+info:
+  app:
+    name: "@project.name@"
+    description: "@project.description@"
+    version: "@project.version@"

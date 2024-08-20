@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>
+        %white(%d{"dd/MM/yyyy HH:mm:ss", GMT-3}) %highlight(%-5level) [traceId=%X{traceId} spanId=%X{spanId}] [%blue(%t)] %yellow(%logger{0}):%msg%n%throwable
+      </Pattern>
+    </layout>
+  </appender>
+
+  <appender name="JSON_FORMAT" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.contrib.json.classic.JsonLayout">
+      <timestampFormat>yyyy-MM-dd' 'HH:mm:ss.SSS</timestampFormat>
+      <timestampFormatTimezoneId>Etc/UTC</timestampFormatTimezoneId>
+      <appendLineSeparator>true</appendLineSeparator>
+      <includeContextName>false</includeContextName>
+      <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
+        <prettyPrint>false</prettyPrint>
+      </jsonFormatter>
+    </layout>
+  </appender>
+
+  <springProfile name="stg,prod">
+    <root level="INFO">
+      <appender-ref ref="JSON_FORMAT"/>
+    </root>
+
+    <logger name="${groupId}" level="DEBUG" additivity="false">
+      <appender-ref ref="JSON_FORMAT"/>
+    </logger>
+
+    <logger name="org.zalando.logbook" level="INFO" additivity="false">
+      <appender-ref ref="JSON_FORMAT"/>
+    </logger>
+  </springProfile>
+
+  <springProfile name="test,dev,development">
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="${groupId}" level="DEBUG" additivity="false">
+      <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <logger name="org.zalando.logbook" level="INFO" additivity="false">
+      <appender-ref ref="CONSOLE"/>
+    </logger>
+  </springProfile>
+
+</configuration>

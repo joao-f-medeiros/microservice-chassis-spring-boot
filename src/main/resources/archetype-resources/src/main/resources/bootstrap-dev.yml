@@ -1,0 +1,12 @@
+management:
+  datadog:
+    metrics:
+      export:
+        enabled: false
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+logbook:
+  format:
+    style: http
