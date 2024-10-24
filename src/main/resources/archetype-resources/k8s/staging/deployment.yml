@@ -44,7 +44,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /${artifactId}/livez
               port: 8080
               scheme: HTTP
             successThreshold: 1
@@ -54,7 +54,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: 8080
+              port: 9090
               scheme: HTTP
             successThreshold: 1
             periodSeconds: 5
@@ -62,7 +62,7 @@ spec:
             failureThreshold: 10
           startupProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /${artifactId}/livez
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 30

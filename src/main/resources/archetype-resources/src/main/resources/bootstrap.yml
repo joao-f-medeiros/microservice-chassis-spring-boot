@@ -34,7 +34,6 @@ server:
 management:
   server:
     port: 9090
-  context-path: /actuator
   info:
     java:
       enabled: true
@@ -45,6 +44,7 @@ management:
       exposure:
         include: health,info
     web:
+      base-path: /actuator
       exposure:
         include: "*"
         exclude: env,beans,shutdown
