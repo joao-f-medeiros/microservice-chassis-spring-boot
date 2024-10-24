@@ -3,6 +3,8 @@ package ${groupId}.${artifactIdToPackageImport}.infrastructure.components;
 import io.micrometer.common.KeyValue;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
+import io.opentracing.Span;
+import io.opentracing.util.GlobalTracer;
 import lombok.NonNull;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,12 @@ public class ObservationCustomHandler implements ObservationHandler<Observation.
   public void onStart(Observation.Context context) {
     context.addLowCardinalityKeyValue(KeyValue.of(CURRENT_TENANT_ID, Optional.ofNullable(MultiTenantContext.getCurrentTenant()).map(Object::toString).orElse("")));
     context.addLowCardinalityKeyValue(KeyValue.of(CURRENT_TENANT_NAME, Optional.ofNullable(MultiTenantContext.getCurrentTenantName()).orElse("")));
+
+    final Span span = GlobalTracer.get().activeSpan();
+    if (span != null) {
+      span.setTag(CURRENT_TENANT_ID, Optional.ofNullable(MultiTenantContext.getCurrentTenant()).map(Object::toString).orElse(""));
+      span.setTag(CURRENT_TENANT_NAME, Optional.ofNullable(MultiTenantContext.getCurrentTenantName()).orElse(""));
+    }
   }
 
   @Override

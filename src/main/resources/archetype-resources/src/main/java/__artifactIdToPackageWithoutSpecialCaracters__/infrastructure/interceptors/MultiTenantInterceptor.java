@@ -1,4 +1,4 @@
-import ${groupId}.${artifactIdToPackageImport}.infrastructure.interceptors;
+package ${groupId}.${artifactIdToPackageImport}.infrastructure.interceptors;
 
 import ${groupId}.${artifactIdToPackageImport}.infrastructure.components.MultiTenantContext;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,8 +1,10 @@
-import ${groupId}.${artifactIdToPackageImport}.infrastructure.interceptors;
+package ${groupId}.${artifactIdToPackageImport}.infrastructure.interceptors;
 
 import ${groupId}.${artifactIdToPackageImport}.infrastructure.components.MultiTenantContext;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
+import io.opentracing.Span;
+import io.opentracing.util.GlobalTracer;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,12 @@ public class TracingInterceptor implements HandlerInterceptor {
     if(Objects.nonNull(currentObservation)) {
       currentObservation.lowCardinalityKeyValue(CURRENT_TENANT_ID, Optional.ofNullable(MultiTenantContext.getCurrentTenant()).map(Object::toString).orElse(""));
       currentObservation.lowCardinalityKeyValue(CURRENT_TENANT_NAME, Optional.ofNullable(MultiTenantContext.getCurrentTenantName()).orElse(""));
+
+      final Span span = GlobalTracer.get().activeSpan();
+      if (span != null) {
+        span.setTag(CURRENT_TENANT_ID, Optional.ofNullable(MultiTenantContext.getCurrentTenant()).map(Object::toString).orElse(""));
+        span.setTag(CURRENT_TENANT_NAME, Optional.ofNullable(MultiTenantContext.getCurrentTenantName()).orElse(""));
+      }
     }
 
     return true;
