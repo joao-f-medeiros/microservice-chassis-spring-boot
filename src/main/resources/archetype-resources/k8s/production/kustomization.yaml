@@ -1,0 +1,101 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- deployment.yml
+
+namespace: production
+
+images:
+- name: 058264257343.dkr.ecr.us-east-1.amazonaws.com/projuris-empresas/${artifactId}
+  newName: 058264257343.dkr.ecr.us-east-1.amazonaws.com/projuris-empresas/${artifactId}
+  newTag: tag
+
+commonAnnotations:
+  co.elastic.logs/json.message_key: log
+  git/name: ${artifactId}
+  git/repo: git@gitlab.com:softplan/legal/projuris-empresas/core/${artifactId}.git
+  squad: core
+  vault.security.banzaicloud.io/vault-path: kubernetes-projuris-empresas-production
+  vault.security.banzaicloud.io/vault-role: microservices
+  vault.security.banzaicloud.io/vault-skip-verify: "true"
+
+configMapGenerator:
+- literals:
+  - version=tag
+  - env=production
+  - service=${artifactId}
+  name: datadog-tags
+
+replacements:
+- source:
+    fieldPath: data.env
+    kind: ConfigMap
+    name: datadog-tags
+    version: v1
+  targets:
+  - fieldPaths:
+    - spec.template.metadata.labels.[tags.datadoghq.com/env]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1
+  - fieldPaths:
+    - metadata.labels.[tags.datadoghq.com/env]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1
+- source:
+    fieldPath: data.service
+    kind: ConfigMap
+    name: datadog-tags
+    version: v1
+  targets:
+  - fieldPaths:
+    - spec.template.metadata.labels.[tags.datadoghq.com/service]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1
+  - fieldPaths:
+    - metadata.labels.[tags.datadoghq.com/service]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1
+- source:
+    fieldPath: data.version
+    kind: ConfigMap
+    name: datadog-tags
+    version: v1
+  targets:
+  - fieldPaths:
+    - spec.template.metadata.labels.[tags.datadoghq.com/version]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1
+  - fieldPaths:
+    - metadata.labels.[tags.datadoghq.com/version]
+    options:
+      index: 1
+    select:
+      group: apps
+      kind: Deployment
+      name: ${artifactId}
+      version: v1

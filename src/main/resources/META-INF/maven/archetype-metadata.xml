@@ -40,13 +40,24 @@
         <include>**/*</include>
       </includes>
     </fileSet>
+    <fileSet encoding="UTF-8" filtered="true" packaged="false">
+      <directory>.docker</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+    <fileSet encoding="UTF-8" filtered="true" packaged="false">
+      <directory>k8s</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
     <fileSet filtered="true" packaged="false" encoding="UTF-8">
       <directory/>
       <includes>
         <include>.gitignore</include>
         <include>.editorconfig</include>
         <include>lombok.config</include>
-        <include>Dockerfile</include>
         <include>README.md</include>
       </includes>
     </fileSet>

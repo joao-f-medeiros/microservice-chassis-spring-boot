@@ -1,0 +1,158 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${artifactId}
+  labels:
+    tags.datadoghq.com/env: ENV_PLACEHOLDER
+    tags.datadoghq.com/service: SERVICE_PLACEHOLDER
+    tags.datadoghq.com/version: VERSION_PLACEHOLDER
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      name: ${artifactId}
+  template:
+    metadata:
+      labels:
+        name: ${artifactId}
+        tags.datadoghq.com/env: ENV_PLACEHOLDER
+        tags.datadoghq.com/service: SERVICE_PLACEHOLDER
+        tags.datadoghq.com/version: VERSION_PLACEHOLDER
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: environment
+                    operator: In
+                    values:
+                      - production
+      containers:
+        - name: ${artifactId}
+          image: 058264257343.dkr.ecr.us-east-1.amazonaws.com/projuris-empresas/${artifactId}
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "500Mi"
+            requests:
+              cpu: "0.3"
+              memory: "500Mi"
+          ports:
+            - name: management
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+              scheme: HTTP
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 10
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 30
+          env:
+            - name: SPRING_PROFILE
+              value: "prod"
+            - name: CONFIG_SERVER_URI
+              value: "http://projuris-empresas-config-server-app.production.svc.cluster.local:8080"
+            - name: SECURITY_PASSWORD
+              value: "vault:secrets/data/projuris-empresas/config-server#spring.cloud.config.password"
+            - name: DATADOG_KEY
+              value: "vault:secrets/data/projuris-empresas/datadog#management.metrics.export.datadog.api-key"
+            - name: DD_AGENT_ENABLED
+              value: "false"
+            - name: DD_DATA_STREAMS_ENABLED
+              value: "true"
+            - name: DD_TRACE_REMOVE_INTEGRATION_SERVICE_NAMES_ENABLED
+              value: "true"
+            - name: ENVIRONMENT
+              value: "production"
+            - name: PROJURIS_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.name"
+            - name: PROJURIS_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.namespace"
+            - name: PROJURIS_DEPLOYMENT_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['app.kubernetes.io/instance']"
+            - name: DD_TAGS
+              value: "projuris_pod_name:$(PROJURIS_POD_NAME)"
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['tags.datadoghq.com/env']"
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['tags.datadoghq.com/service']"
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['tags.datadoghq.com/version']"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ${artifactId}-pdb
+spec:
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      name: ${artifactId}
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: ${artifactId}-autoscaler
+spec:
+  minReplicas: 1
+  maxReplicas: 5
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ${artifactId}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 85
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${artifactId}
+spec:
+  selector:
+    name: ${artifactId}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
