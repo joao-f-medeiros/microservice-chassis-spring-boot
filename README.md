@@ -12,13 +12,13 @@ interativo com base no archetype construido acima.
 
 ```shell
 mvn -B archetype:generate \
-	-DarchetypeGroupId=dev.zevolution \
-	-DarchetypeArtifactId=archetype--spring-boot \
+	-DarchetypeGroupId=com.microservice \
+	-DarchetypeArtifactId=archetype--microservice \
 	-DarchetypeVersion=0.0.1-SNAPSHOT \
-	-DgroupId=dev.zevolution \
-	-DartifactId=api--teste \
+	-DgroupId=com.projuris \
+	-DartifactId=permission-service \
 	-Dversion=0.0.1-SNAPSHOT \
-	-DartifactIdToPackage=netflixhexagonalarchitecture
+	-DartifactIdToPackage=permissionservice
 ```
 
 Descritivo de cada propriedade:
