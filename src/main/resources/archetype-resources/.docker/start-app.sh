@@ -11,4 +11,4 @@ if [ "$DD_AGENT_ENABLED" = "true" ]; then
                           -Ddd.profiling.enabled=true -Ddd.profiling.allocation.enabled=true -Ddd.data.streams.enabled=true"
 fi
 
-java "${JAVA_OPTS}" -jar /app/application.jar
+java ${JAVA_OPTS} -jar /app/application.jar

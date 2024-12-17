@@ -2,8 +2,8 @@ package ${groupId}.${artifactIdToPackageImport}.adapter.inbound.rest;
 
 import ${groupId}.${artifactIdToPackageImport}.adapter.ConversionServiceAdapter;
 import ${groupId}.${artifactIdToPackageImport}.adapter.inbound.dto.SampleResponse;
-import ${groupId}.${artifactIdToPackageImport}.domain.entities.Sample;
-import ${groupId}.${artifactIdToPackageImport}.domain.services.SampleService;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.entities.Sample;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.services.SampleService;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;

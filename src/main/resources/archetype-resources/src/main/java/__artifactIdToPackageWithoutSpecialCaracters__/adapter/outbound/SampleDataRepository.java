@@ -1,8 +1,8 @@
 package ${groupId}.${artifactIdToPackageImport}.adapter.outbound;
 
-import ${groupId}.${artifactIdToPackageImport}.domain.entities.Sample;
-import ${groupId}.${artifactIdToPackageImport}.infrastructure.exceptions.NotFoundException;
-import ${groupId}.${artifactIdToPackageImport}.domain.repositories.SampleRepository;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.entities.Sample;
+import ${groupId}.${artifactIdToPackageImport}.core.config.exceptions.NotFoundException;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.repositories.SampleRepository;
 import io.micrometer.observation.annotation.Observed;
 import org.springframework.stereotype.Repository;
 

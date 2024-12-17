@@ -24,10 +24,18 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: environment
-                    operator: In
-                    values:
-                      - staging
+                - key: environment
+                  operator: In
+                  values:
+                    - staging
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    name: ${artifactId}
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: ${artifactId}
           image: 058264257343.dkr.ecr.us-east-1.amazonaws.com/projuris-empresas/${artifactId}
@@ -44,7 +52,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /${artifactId}/livez
+              path: /livez
               port: 8080
               scheme: HTTP
             successThreshold: 1
@@ -62,7 +70,7 @@ spec:
             failureThreshold: 10
           startupProbe:
             httpGet:
-              path: /${artifactId}/livez
+              path: /livez
               port: 8080
               scheme: HTTP
             initialDelaySeconds: 30
@@ -82,11 +90,11 @@ spec:
             - name: ENVIRONMENT
               value: "staging"
             - name: DD_AGENT_ENABLED
-              value: "true"
+              value: "false"
             - name: DD_DATA_STREAMS_ENABLED
-              value: "true"
+              value: "false"
             - name: DD_TRACE_REMOVE_INTEGRATION_SERVICE_NAMES_ENABLED
-              value: "true"
+              value: "false"
             - name: PROJURIS_POD_NAME
               valueFrom:
                 fieldRef:
@@ -113,17 +121,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: "metadata.labels['tags.datadoghq.com/version']"
-
----
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: ${artifactId}-pdb
-spec:
-  maxUnavailable: 0
-  selector:
-    matchLabels:
-      name: ${artifactId}
 ---
 kind: HorizontalPodAutoscaler
 apiVersion: autoscaling/v2

@@ -15,7 +15,7 @@ server:
   port: 8080
   shutdown: graceful
   servlet:
-    context-path: /${spring.application.name}
+    context-path: /
     encoding:
       enabled: true
       charset: UTF-8
@@ -73,7 +73,7 @@ management:
   datadog:
     metrics:
       export:
-        enabled: true
+        enabled: false
         step: 1m
         host-tag: ${dollar}{spring.application.name}.app.tld
         api-key: ${dollar}{DATADOG_KEY:vault}
@@ -145,7 +145,7 @@ springdoc:
 logbook:
   predicate:
     include:
-      - path: /${spring.application.name}/**
+      - path: /**
         methods:
           - GET
           - POST
@@ -155,7 +155,7 @@ logbook:
       - path: /actuator/**
     exclude:
       - path: /actuator/health
-      - path: /${spring.application.name}/admin/**
+      - path: /admin/**
         methods:
           - POST
   filter:

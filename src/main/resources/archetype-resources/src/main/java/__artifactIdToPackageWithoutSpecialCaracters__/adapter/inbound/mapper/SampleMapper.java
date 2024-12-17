@@ -1,6 +1,6 @@
 package ${groupId}.${artifactIdToPackageImport}.adapter.inbound.mapper;
 
-import ${groupId}.${artifactIdToPackageImport}.domain.entities.Sample;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.entities.Sample;
 import ${groupId}.${artifactIdToPackageImport}.adapter.inbound.dto.SampleResponse;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

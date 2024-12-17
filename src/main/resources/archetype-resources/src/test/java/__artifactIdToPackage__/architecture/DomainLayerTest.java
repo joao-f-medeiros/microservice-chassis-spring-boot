@@ -16,7 +16,7 @@ public class DomainLayerTest extends ArchitectureTest {
     .resideInAPackage(DOMAIN_LAYER_PACKAGES)
     .should()
     .dependOnClassesThat()
-    .resideInAnyPackage(ADAPTERS_LAYER_PACKAGES, INFRASTRUCTURE_LAYER_PACKAGES);
+    .resideInAnyPackage(ADAPTERS_LAYER_PACKAGES, CORE_CONFIG_LAYER_PACKAGES);
 
   @ArchTest
   public static final ArchRule noDomainUsedByAllowedLayers = classes()

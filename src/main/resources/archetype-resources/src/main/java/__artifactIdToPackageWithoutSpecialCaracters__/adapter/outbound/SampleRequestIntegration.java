@@ -1,6 +1,6 @@
 package ${groupId}.${artifactIdToPackageImport}.adapter.outbound;
 
-import ${groupId}.${artifactIdToPackageImport}.domain.integrations.SampleIntegration;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.integrations.SampleIntegration;
 import io.micrometer.observation.annotation.Observed;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;

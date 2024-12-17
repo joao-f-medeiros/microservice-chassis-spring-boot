@@ -1,8 +1,8 @@
 package ${groupId}.${artifactIdToPackageImport}.adapter.inbound.rest;
 
 import ${groupId}.${artifactIdToPackageImport}.EnableTestObservation;
-import ${groupId}.${artifactIdToPackageImport}.infrastructure.exceptions.NotFoundException;
-import ${groupId}.${artifactIdToPackageImport}.domain.integrations.SampleIntegration;
+import ${groupId}.${artifactIdToPackageImport}.core.config.exceptions.NotFoundException;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.integrations.SampleIntegration;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

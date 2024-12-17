@@ -10,7 +10,7 @@ spring:
 
 server:
   servlet:
-    context-path: /${spring.application.name}
+    context-path: /
 
 management:
   server:

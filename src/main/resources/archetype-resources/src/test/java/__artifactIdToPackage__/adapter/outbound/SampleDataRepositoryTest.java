@@ -1,6 +1,6 @@
 package ${groupId}.${artifactIdToPackageImport}.adapter.outbound;
 
-import ${groupId}.${artifactIdToPackageImport}.domain.entities.Sample;
+import ${groupId}.${artifactIdToPackageImport}.core.domain.entities.Sample;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
