@@ -1,104 +1,80 @@
 # Microservice Chassis Spring Boot
 
-Este projeto é um microservice chassis e pode ser utilizado como base na criação de novos microserviços.
+Este projeto é um microservice chassis projetado para servir como base na criação de novos microserviços. Ele incorpora padrões modernos de arquitetura, como a Arquitetura Hexagonal, para garantir escalabilidade, testabilidade e independência tecnológica.
 
-Este chassis foi criado a partir das necessidades basicas de um microserviço, com cliente HTTP e persistência em banco
-de dados.
-Conforme a necesside, libs que fizerem necessárias ao cenário do seu projeto poderão ser adicionadas ou removidas.
+## Arquitetura
 
-# Arquitetura
+Este chassis segue o padrão de Arquitetura Hexagonal (Ports and Adapters), que separa claramente as responsabilidades entre domínio, interfaces de entrada e saída. Isso facilita a manutenção, o entendimento do código e a inclusão de novas funcionalidades. Saiba mais sobre o padrão [aqui](https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749).
 
-Utilizamos como base, a implementação da arquitetura hexagonal proposta pela Netflix, conheça um pouco mais
-clicando [aqui](https://netflixtechblog.com/ready-for-changes-with-hexagonal-architecture-b315ec967749).
+### Estrutura de Pacotes
 
-### Camadas
-
-O modelo proposto pela Netflix, possui um isolamento baseado em dois conceitos, sendo eles: business-logic e adapters.
-Dado esse conceito,
-fizemos uma pequena modificação isolando os pacotes que fazem parte do business-logic no pacote `internal`, e os pacotes
-de fronteiras dentro do pacote `adapter`.
-
-Abaixo, breve descrição da responsabilidade de cada camada.
-
-- **Transport Layer**: É a camada a qual aciona uma regra de negócio, sendo reponsável pela entrada de dados do mundo
-  externo, para nossa aplicação.
-  Aqui podem ficar nossos http providers, como por exemplo REST e GraphQL. Ou até mesmo consumers de message brokers
-  como AWS SQS Listeners, Kafka Consumer e Redis Subscribers.
-
-- **Interactor**: Responsável por parte da lógica de negócio, recebe os dados da camada de transport e delega, se
-  necessário, para a camada de datasource.
-
-- **Entities**: Responsável por mapear o nosso dominio e parte da lógica de negócio junto aos interactors. Devendo a
-  todo custo
-  evitar dependências de frameworks e libs externas, ex: Lombok, notações Spring e etc.
-
-- **Datasource**: É a camada que recebe um acionamento vindo de uma regra de negócio, responsável por direcionar o
-  conteúdo
-  para a fonte de dados correta, podendo ser um AWS SQS Producer, AWS S3, arquivos CSV em disco, etc. *Esta camada pode
-  ter mais de uma implementação.*
+A estrutura do projeto foi ajustada para refletir os princípios da Arquitetura Gritante. Nomes simples e descritivos ajudam a acelerar o entendimento do que é importante, eliminando ambiguidades.
 
 ```markdown
 📦 src
-┣ 📦 main/java/dev/zevolution/netflixhexaarch
-┃ ┣ 📂 adapter: Adaptadores responsavéis por acionar ou serem acionados a partir de eventos externos ou do bussiness-logic
-┃ ┃ ┣ 📂 datasources: Todas as fontes de dados utilizadas pela aplicação
-┃ ┃ ┃ ┣ 📂 services: Serviço que podem vir a ser utilizados pelas fontes de dados, ex: uma class Feign Client
-┃ ┃ ┃ ┃ ┣ 📂 data: DTO's de request e response utilizados pelos services acima
-┃ ┃ ┃ ┃ ┃ ┣ 📂 request:
-┃ ┃ ┃ ┃ ┃ ┣ 📂 response:
-┃ ┃ ┃ ┃ ┣ 📂 mapper: Classes mapeadores, responsáveis por mapear os DTO's dos services, para entidades do bussiness-logic(internal)
-┃ ┃ ┃ ┃ ┣ 📂 model: Classes responsáveis por mapear as entidades de banco de dados, aqui, podemos utilizar anotações como @Entity, @Column, etc...
-┃ ┃ ┣ 📂 properties: Classes responsáveis por mapear properties existentes no application.yml
-┃ ┃ ┣ 📂 transportlayers: Todas as fontes para entrada de dados na nossa aplicação, ex: Controllers, Consumers, Socket, etc ...
-┃ ┃ ┃ ┣ 📂 mapper: Classes mapeadores, responsáveis por mapear os DTO's da transportlayer, para entidades do bussiness-logic(internal) e vice-versa
-┃ ┃ ┃ ┣ 📂 restapi(example): Exemplo de onde podemos adicionar nossos Controllers
-┃ ┃ ┃ ┣ 📂 messagebrokers(example): Exemplo de onde podemos adicionar nossos Listeners, Consumers e Subscribers
-┃ ┃ ┃ ┣ 📂 graphql(example): Exemplo de onde podemos adicionar nossos Controllers
-┃ ┣ 📂 bootstrap: Classes de configuração da aplicação
-┃ ┃ ┣ 📂 exceptions: Exceções da aplicação, podendo ser compartilhada entre camadas
-┃ ┣ 📂 internal: Contem tudo relacionado a Business-Logic
-┃ ┃ ┣ 📂 entities: Classes utilizadas para mapeamento do nosso negócio/dominio
-┃ ┃ ┣ 📂 interactors: Classes responsável por regras de negócio especificas
-┃ ┃ ┣ 📂 properties: Classes responsáveis por mapear properties existentes no application.yml
-┃ ┃ ┣ 📂 repositories: Interfaces responsáveis por especificar para o datasource, qual o input e retorno exigido pelo nosso domínio
-┃ ┗ 📜 Application.java: Classe inicializadora
+┣ 📦 main/java/com/projuris
+┃ ┣ 📂 bootstrap: Configuração e inicialização da aplicação.
+┃ ┃ ┣ 📂 exceptions: Exceções reutilizáveis entre camadas.
+┃ ┃ ┗ 📜 Application.java: Classe inicializadora.
+┃ ┣ 📂 core: Contém toda a lógica de negócio e abstrações do domínio.
+┃ ┃ ┣ 📂 domain: Classes de domínio, comandos e eventos do sistema.
+┃ ┃ ┣ 📂 usecases: Casos de uso representando operações do sistema.
+┃ ┃ ┣ 📂 gateways: Interfaces que definem interações com recursos externos.
+┃ ┃ ┗ 📂 repositories: Repositórios abstratos para persistência.
+┃ ┣ 📂 inbound: Interfaces de entrada, como controladores e listeners.
+┃ ┃ ┣ 📂 rest: APIs REST e controladores HTTP.
+┃ ┃ ┗ 📂 messagebrokers: Consumers e listeners de mensagens.
+┃ ┗ 📂 outbound: Implementações de acesso a recursos externos.
+┃ ┃ ┣ 📂 persistence: Comunicação com bancos de dados.
+┃ ┃ ┗ 📂 messageproducers: Producers de mensagens.
 ┣ 📦 main/resources
-┃ ┣ 📜 application.yml
-┃ ┣ 📜 bootstrap.yml
-┃ ┗ 📜 openapi.yml
+┃ ┣ 📜 application.yml: Configurações da aplicação.
+┃ ┗ 📜 openapi.yml: Especificação OpenAPI para geração de stubs.
 ┣ 📜 .gitignore
 ┣ 📜 Dockerfile
 ┣ 📜 pom.xml
-┗ 📜 README.MD
+┗ 📜 README.md
 ```
 
-# Tecnologias
+## Tecnologias Utilizadas
 
-Foi utilizado na criação deste chassis bibliotecas como:
+O chassis utiliza as seguintes tecnologias:
 
-* [Java 11](https://openjdk.java.net/projects/jdk/11/)
-* [Maven](https://maven.apache.org/)
-* [Spring-Boot 2.5.0](https://docs.spring.io/spring-boot/docs/2.2.2.RELEASE/reference/htmlsingle/)
-* [SpringFox 3](https://github.com/springfox/springfox/releases/tag/3.0.0)
-* [MapStruct](https://mapstruct.org/documentation/stable/reference/html/)
-* [OpenFeign](https://spring.io/projects/spring-cloud-openfeign)
-* [JUnit 5](https://junit.org/junit5/docs/current/user-guide/)
-* [OpenAPI Generator](https://github.com/OpenAPITools/openapi-generator)
-    * O chassis está gerando o código a partir da especificação em `src/main/resources/openapi.yml`
-* [Micrometer Registry Prometheus](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#actuator.metrics.getting-started)
+- **Java 17**: Linguagem principal do projeto.
+- **Spring Boot 3.2.1**: Framework para criação de aplicações Java modernas.
+- **Spring Cloud 2023.0.0**: Ferramentas para microsserviços distribuídos.
+- **OpenAPI Generator**: Geração automática de código a partir de especificações.
+- **MapStruct**: Mapeamento de objetos eficiente e simples.
+- **Micrometer**: Monitoramento de métricas com suporte ao Prometheus e Datadog.
+- **Logbook**: Captura e registro de logs HTTP detalhados.
+- **Resilience4j**: Implementação de padrões de resiliência como circuit breakers.
+- **JUnit 5**: Testes unitários e de integração.
 
-# Build
+## Build
 
-Antes de subir a aplicação, execute o comando `mvn clean install` ou mesmo o comando `mvn clean generate-sources` para
-gerar os stubs
-utilizando OpenAPI-Generator-Tools, a partir do arquivo `openapi.yml`.
+Antes de iniciar a aplicação, execute os seguintes comandos para garantir que as dependências estejam atualizadas e os stubs gerados:
 
-# URLs
+```bash
+mvn clean install
+mvn clean generate-sources
+```
 
-- Documentação swagger do próprio chassis: `http://localhost:8080/project-artifact/swagger-ui/`
-- Spring Actuator: `http://localhost:9090/actuator`
-- Métricas prometheus: `http://localhost:9090/actuator/prometheus`
+## URLs de Referência
 
-# Exemplos de implementação
+- **Swagger**: Documentação interativa do OpenAPI: `http://localhost:8080/requisicao-service/swagger-ui/`
+- **Spring Actuator**: Endpoints de monitoramento: `http://localhost:9090/actuator`
+- **Métricas Prometheus**: `http://localhost:9090/actuator/prometheus`
 
-- [Transport RESTAPI | Datasource Feign Client](https://github.com/zevolution/netflix-hexagonal-architecture)
+## Importância da Arquitetura Gritante
+
+A Arquitetura Gritante foca na clareza e na simplicidade, permitindo que desenvolvedores entendam rapidamente o objetivo do sistema e onde cada funcionalidade reside. Ao usar nomes diretos e intuitivos, reduz-se o tempo necessário para explorar e alterar o código, aumentando a produtividade e diminuindo erros.
+
+## Exemplos de Implementação
+
+Consulte os seguintes exemplos para ajudar na implementação:
+
+- **REST API e Datasource Feign Client**: [Exemplo no GitHub](https://github.com/zevolution/netflix-hexagonal-architecture)
+
+---
+
+Este chassis foi projetado para ser flexível e modular. Personalize-o conforme as necessidades específicas do seu projeto, mantendo os princípios de design modular e acoplamento fraco.
