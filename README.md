@@ -34,6 +34,34 @@ Descritivo de cada propriedade:
       artifactId(formatado contendo somente letras)
     * Caso deseje criar subpackage para categorizar, utilize "/", ex: architecture/netflixhexagonal
 
+# Estrutura do Projeto do Archetype
+
+A estrutura do projeto do archetype em si é organizada da seguinte forma:
+
+```
+📦 archetype-microservice
+┣ 📦 src
+┃ ┣ 📦 main
+┃ ┃ ┣ 📦 resources
+┃ ┃ ┃ ┣ 📦 archetype-resources
+┃ ┃ ┃ ┃ ┣ 📜 Dockerfile
+┃ ┃ ┃ ┃ ┣ 📜 README.MD
+┃ ┃ ┃ ┃ ┣ 📜 .gitignore
+┃ ┃ ┃ ┃ ┗ pom.xml
+┃ ┃ ┃ ┣ 📦 META-INF
+┃ ┃ ┃ ┃ ┗ 📦 maven
+┃ ┃ ┃ ┃   ┗ 📜 archetype-metadata.xml
+┣ 📜 .gitignore
+┣ 📜 pom.xml
+┗ 📜 README.md
+```
+
+Principais arquivos e diretórios:
+
+* **pom.xml**: Arquivo de configuração principal do Maven para o projeto do archetype.
+* **src/main/resources/archetype-resources**: Contém os recursos que serão copiados para o projeto gerado. Isso inclui o `pom.xml` do projeto gerado, `Dockerfile`, `README.MD`, `.gitignore`, etc.
+* **src/main/resources/META-INF/maven/archetype-metadata.xml**: Define como o archetype deve gerar projetos, incluindo variáveis e arquivos a serem processados.
+
 # Exemplos
 
 **Exemplo 1**: Utilizando `-DartifactIdToPackage=netflixhexagonalarchitecture`
