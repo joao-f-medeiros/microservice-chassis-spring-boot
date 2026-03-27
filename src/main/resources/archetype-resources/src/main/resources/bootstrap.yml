@@ -70,13 +70,6 @@ management:
       jvm: false
     tags:
       application: ${dollar}{spring.application.name}
-  datadog:
-    metrics:
-      export:
-        enabled: false
-        step: 1m
-        host-tag: ${dollar}{spring.application.name}.app.tld
-        api-key: ${dollar}{DATADOG_KEY:vault}
   tracing:
     enabled: true
     propagation:

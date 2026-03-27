@@ -40,12 +40,12 @@ A estrutura do projeto foi ajustada para refletir os princípios da Arquitetura 
 
 O chassis utiliza as seguintes tecnologias:
 
-- **Java 17**: Linguagem principal do projeto.
-- **Spring Boot 3.2.1**: Framework para criação de aplicações Java modernas.
+- **Java 21**: Linguagem principal do projeto.
+- **Spring Boot 3.2.5**: Framework para criação de aplicações Java modernas.
 - **Spring Cloud 2023.0.0**: Ferramentas para microsserviços distribuídos.
 - **OpenAPI Generator**: Geração automática de código a partir de especificações.
 - **MapStruct**: Mapeamento de objetos eficiente e simples.
-- **Micrometer**: Monitoramento de métricas com suporte ao Prometheus e Datadog.
+- **Micrometer**: Monitoramento de métricas com suporte ao Prometheus.
 - **Logbook**: Captura e registro de logs HTTP detalhados.
 - **Resilience4j**: Implementação de padrões de resiliência como circuit breakers.
 - **JUnit 5**: Testes unitários e de integração.
