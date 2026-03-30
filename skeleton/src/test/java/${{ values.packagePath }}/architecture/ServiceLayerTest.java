@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class ServiceLayerTest extends ArchitectureTest {
 
   @ArchTest

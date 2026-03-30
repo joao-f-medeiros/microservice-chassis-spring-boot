@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class InboundLayerTest extends ArchitectureTest {
 
   @ArchTest

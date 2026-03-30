@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class OutboundLayerTest extends ArchitectureTest{
 
   @ArchTest

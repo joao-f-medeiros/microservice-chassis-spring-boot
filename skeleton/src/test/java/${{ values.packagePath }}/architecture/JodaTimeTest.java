@@ -5,7 +5,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.GeneralCodingRules;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class JodaTimeTest {
 
   @ArchTest

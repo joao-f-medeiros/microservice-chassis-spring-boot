@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.tngtech.archunit.lang.conditions.ArchConditions.beAnnotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noFields;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class InjectionTest {
 
   @ArchTest

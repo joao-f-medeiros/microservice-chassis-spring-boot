@@ -6,7 +6,7 @@ import com.tngtech.archunit.lang.ArchRule;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.packageName }}")
 public class HexagonalTest extends ArchitectureTest {
 
   public static final String DOMAIN_LAYER = "Domain";
