@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ values.artifactId }}
+  labels:
+    tags.datadoghq.com/env: ENV_PLACEHOLDER
+    tags.datadoghq.com/service: SERVICE_PLACEHOLDER
+    tags.datadoghq.com/version: VERSION_PLACEHOLDER
+spec:
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      name: {{ values.artifactId }}
+  template:
+    metadata:
+      labels:
+        name: {{ values.artifactId }}
+        tags.datadoghq.com/env: ENV_PLACEHOLDER
+        tags.datadoghq.com/service: SERVICE_PLACEHOLDER
+        tags.datadoghq.com/version: VERSION_PLACEHOLDER
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: environment
+                  operator: In
+                  values:
+                    - production
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    name: {{ values.artifactId }}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: {{ values.artifactId }}
+          image: 058264257343.dkr.ecr.us-east-1.amazonaws.com/projuris-empresas/{{ values.artifactId }}
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: "500Mi"
+            requests:
+              cpu: "0.3"
+              memory: "500Mi"
+          ports:
+            - name: management
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /livez
+              port: 8080
+              scheme: HTTP
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 9090
+              scheme: HTTP
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 10
+          startupProbe:
+            httpGet:
+              path: /livez
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            successThreshold: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            failureThreshold: 30
+          env:
+            - name: SPRING_PROFILE
+              value: "prod"
+            - name: CONFIG_SERVER_URI
+              value: "http://projuris-empresas-config-server-app.production.svc.cluster.local:8080"
+            - name: SECURITY_PASSWORD
+              value: "vault:secrets/data/projuris-empresas/config-server#spring.cloud.config.password"
+            - name: ENVIRONMENT
+              value: "production"
+            - name: PROJURIS_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.name"
+            - name: PROJURIS_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.namespace"
+            - name: PROJURIS_DEPLOYMENT_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: "metadata.labels['app.kubernetes.io/instance']"
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ values.artifactId }}-pdb
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: {{ values.artifactId }}
+---
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2
+metadata:
+  name: {{ values.artifactId }}-autoscaler
+spec:
+  minReplicas: 1
+  maxReplicas: 5
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ values.artifactId }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 85
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ values.artifactId }}
+spec:
+  selector:
+    name: {{ values.artifactId }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080

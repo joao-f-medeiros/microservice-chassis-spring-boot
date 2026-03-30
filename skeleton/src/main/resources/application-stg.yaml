@@ -1,0 +1,10 @@
+spring:
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URI}
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URI}
+      name: projuris-empresas
+      profile: stg,mongodb-services-stg
+      username: projuris
+      password: ${SECURITY_PASSWORD}

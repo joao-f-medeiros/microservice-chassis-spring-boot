@@ -1,0 +1,133 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: microservice-spring-boot
+  title: Microservice Spring Boot (Hexagonal)
+  description: Cria um microserviço Spring Boot com Arquitetura Hexagonal, observabilidade, resiliência e deploy Kubernetes.
+  tags:
+    - java
+    - spring-boot
+    - hexagonal
+    - microservice
+    - kubernetes
+spec:
+  owner: platform-team
+  type: service
+
+  parameters:
+    - title: Identificação do Serviço
+      required:
+        - artifactId
+        - groupId
+        - description
+        - squad
+      properties:
+        artifactId:
+          title: Artifact ID
+          type: string
+          description: Nome do artefato Maven (ex: payment-service)
+          pattern: '^[a-z][a-z0-9-]*$'
+          ui:autofocus: true
+        groupId:
+          title: Group ID
+          type: string
+          description: Group ID Maven (ex: com.projuris)
+          default: com.projuris
+        description:
+          title: Descrição
+          type: string
+          description: Breve descrição do serviço
+        squad:
+          title: Squad
+          type: string
+          description: Nome da squad responsável pelo serviço
+        owner:
+          title: Owner
+          type: string
+          description: Owner do componente no Backstage (ex: group:platform-team)
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: Group
+
+    - title: Configuração Técnica
+      required:
+        - javaVersion
+      properties:
+        javaVersion:
+          title: Versão do Java
+          type: string
+          description: Versão do JDK a ser utilizada
+          default: '21'
+          enum:
+            - '17'
+            - '21'
+          enumNames:
+            - Java 17
+            - Java 21
+
+    - title: Repositório
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: URL do Repositório
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - gitlab.com
+
+  steps:
+    - id: fetch-skeleton
+      name: Gerar estrutura do projeto
+      action: fetch:template
+      input:
+        url: ./skeleton
+        copyWithoutTemplating:
+          - .docker/start-app.sh
+          - .docker/Dockerfile
+          - .editorconfig
+          - lombok.config
+          - src/main/resources/application-dev.yml
+          - src/main/resources/application-stg.yaml
+          - src/main/resources/application-prod.yaml
+          - src/main/resources/bootstrap-dev.yml
+          - src/main/resources/bootstrap-stg.yml
+          - src/main/resources/bootstrap-prod.yml
+          - src/test/resources/application-test.yml
+        values:
+          artifactId: ${{ parameters.artifactId }}
+          groupId: ${{ parameters.groupId }}
+          version: 0.0.1-SNAPSHOT
+          description: ${{ parameters.description }}
+          squad: ${{ parameters.squad }}
+          javaVersion: ${{ parameters.javaVersion }}
+          owner: ${{ parameters.owner }}
+          projectSlug: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
+          gitRepoSsh: git@${{ (parameters.repoUrl | parseRepoUrl).host }}:${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
+          packageName: ${{ parameters.groupId }}.${{ parameters.artifactId | replace("-", "") | replace("_", "") | lower }}
+          packagePath: ${{ parameters.groupId | replace(".", "/") }}/${{ parameters.artifactId | replace("-", "") | replace("_", "") | lower }}
+
+    - id: publish
+      name: Publicar no GitLab
+      action: publish:gitlab
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        description: ${{ parameters.description }}
+        defaultBranch: main
+        repoVisibility: internal
+
+    - id: register
+      name: Registrar no catálogo
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
+
+  output:
+    links:
+      - title: Repositório
+        url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Catálogo
+        entityRef: ${{ steps['register'].output.entityRef }}
