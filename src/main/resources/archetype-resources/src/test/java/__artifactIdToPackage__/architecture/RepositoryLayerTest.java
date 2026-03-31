@@ -14,7 +14,7 @@ public class RepositoryLayerTest extends ArchitectureTest {
   public static final ArchRule implementsRepository = noClasses()
     .that()
     .resideInAPackage(SERVICES_DOMAIN_PACKAGES)
-    .and()
+    .or()
     .resideInAPackage(REPOSITORIES_DOMAIN_PACKAGES)
     .should().beAnnotatedWith(Repository.class);
 }

@@ -21,6 +21,7 @@ public class HexagonalTest extends ArchitectureTest {
 
   @ArchTest
   public static final ArchRule layersValidator = layeredArchitecture()
+    .consideringAllDependencies()
     .layer(DOMAIN_LAYER).definedBy(DOMAIN_LAYER_PACKAGES)
     .layer(ADAPTER_LAYER).definedBy(ADAPTERS_LAYER_PACKAGES)
     .layer(ENTITIES_LAYER).definedBy(ENTITIES_DOMAIN_PACKAGES)
