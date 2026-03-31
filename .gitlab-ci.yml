@@ -11,14 +11,15 @@ compile:
 test:
   stage: test
   script:
-    - >
-      mvn archetype:generate
-      -DarchetypeGroupId=com.microservice
-      -DarchetypeArtifactId=archetype--microservice
-      -DarchetypeVersion=0.0.1-SNAPSHOT
-      -DgroupId=com.example
-      -DartifactId=test-svc
-      -Dpackage=com.example
-      -DinteractiveMode=false
-    - cd test-svc && mvn test
+    - |
+      mkdir -p /tmp/archetype-test && cd /tmp/archetype-test
+      mvn archetype:generate \
+        -DarchetypeGroupId=com.microservice \
+        -DarchetypeArtifactId=archetype--microservice \
+        -DarchetypeVersion=0.0.1-SNAPSHOT \
+        -DgroupId=com.example \
+        -DartifactId=test-svc \
+        -Dpackage=com.example \
+        -DinteractiveMode=false
+      cd test-svc && mvn test
 
