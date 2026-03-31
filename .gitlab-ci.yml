@@ -1,25 +1,24 @@
-stages:
-  - build
-  - test-generate
+include:
+  - project: 'softplan/legal/projuris-empresas/devsecops/pipelines-template'
+    ref: main
+    file: 'common-lib-java/.gitlab-ci.yml'
 
-build:
-  stage: build
-  tags:
-    - online-build-small
+compile:
+  stage: compile
   script:
     - mvn clean install
 
-test-generate:
-  stage: test-generate
-  tags:
-    - online-build-small
+test:
+  stage: test
   script:
-    - mvn archetype:generate
-        -DarchetypeGroupId=com.microservice
-        -DarchetypeArtifactId=archetype--microservice
-        -DarchetypeVersion=0.0.1-SNAPSHOT
-        -DgroupId=com.example
-        -DartifactId=test-svc
-        -Dpackage=com.example
-        -DinteractiveMode=false
+    - >
+      mvn archetype:generate
+      -DarchetypeGroupId=com.microservice
+      -DarchetypeArtifactId=archetype--microservice
+      -DarchetypeVersion=0.0.1-SNAPSHOT
+      -DgroupId=com.example
+      -DartifactId=test-svc
+      -Dpackage=com.example
+      -DinteractiveMode=false
     - cd test-svc && mvn test
+
