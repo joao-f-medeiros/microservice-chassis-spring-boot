@@ -4,11 +4,15 @@ stages:
 
 build:
   stage: build
+  tags:
+    - online-build-small
   script:
     - mvn clean install
 
 test-generate:
   stage: test-generate
+  tags:
+    - online-build-small
   script:
     - mvn archetype:generate
         -DarchetypeGroupId=com.microservice
