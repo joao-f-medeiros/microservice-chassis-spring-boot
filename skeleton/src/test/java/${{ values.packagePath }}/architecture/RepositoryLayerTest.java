@@ -7,14 +7,14 @@ import org.springframework.stereotype.Repository;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-@AnalyzeClasses(packages = "{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
 public class RepositoryLayerTest extends ArchitectureTest {
 
   @ArchTest
   public static final ArchRule implementsRepository = noClasses()
     .that()
     .resideInAPackage(SERVICES_DOMAIN_PACKAGES)
-    .and()
+    .or()
     .resideInAPackage(REPOSITORIES_DOMAIN_PACKAGES)
     .should().beAnnotatedWith(Repository.class);
 }

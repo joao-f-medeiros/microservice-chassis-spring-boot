@@ -6,7 +6,7 @@ import com.tngtech.archunit.lang.ArchRule;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-@AnalyzeClasses(packages = "{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
 public class HexagonalTest extends ArchitectureTest {
 
   public static final String DOMAIN_LAYER = "Domain";
@@ -21,6 +21,7 @@ public class HexagonalTest extends ArchitectureTest {
 
   @ArchTest
   public static final ArchRule layersValidator = layeredArchitecture()
+    .consideringAllDependencies()
     .layer(DOMAIN_LAYER).definedBy(DOMAIN_LAYER_PACKAGES)
     .layer(ADAPTER_LAYER).definedBy(ADAPTERS_LAYER_PACKAGES)
     .layer(ENTITIES_LAYER).definedBy(ENTITIES_DOMAIN_PACKAGES)

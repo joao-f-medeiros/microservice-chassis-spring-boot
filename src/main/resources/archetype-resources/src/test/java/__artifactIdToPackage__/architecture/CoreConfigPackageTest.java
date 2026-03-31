@@ -14,7 +14,7 @@ public class CoreConfigPackageTest extends ArchitectureTest {
   @ArchTest
   public static final ArchRule configurationClassesShouldHaveConfigurationAnnotation = classes()
     .that()
-    .resideInAPackage(DOMAIN_LAYER_PACKAGES)
+    .resideInAPackage(CORE_CONFIG_LAYER_PACKAGES)
     .and()
     .haveSimpleNameEndingWith("Config")
     .should()

@@ -14,7 +14,7 @@ public class InboundLayerTest extends ArchitectureTest {
   @ArchTest
   public static final ArchRule resourceClassesShouldBeAnnotatedWithControllerOrRestControllerAnnotation = classes()
     .that()
-    .resideInAPackage(DOMAIN_LAYER_PACKAGES)
+    .resideInAPackage(INBOUND_ADAPTERS_PACKAGES)
     .and()
     .haveSimpleNameEndingWith("Resource")
     .should()

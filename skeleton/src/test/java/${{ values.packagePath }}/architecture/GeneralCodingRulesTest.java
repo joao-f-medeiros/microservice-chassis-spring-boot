@@ -7,7 +7,7 @@ import com.tngtech.archunit.library.GeneralCodingRules;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-@AnalyzeClasses(packages = "{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
 public class GeneralCodingRulesTest {
 
   @ArchTest

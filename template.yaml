@@ -106,7 +106,7 @@ spec:
           owner: ${{ parameters.owner }}
           projectSlug: ${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}
           gitRepoSsh: git@${{ (parameters.repoUrl | parseRepoUrl).host }}:${{ (parameters.repoUrl | parseRepoUrl).owner }}/${{ (parameters.repoUrl | parseRepoUrl).repo }}.git
-          packageName: ${{ parameters.groupId }}.${{ parameters.artifactId | replace("-", "") | replace("_", "") | lower }}
+          packageName: ${{ parameters.artifactId | replace("-", "") | replace("_", "") | lower }}
           packagePath: ${{ parameters.groupId | replace(".", "/") }}/${{ parameters.artifactId | replace("-", "") | replace("_", "") | lower }}
 
     - id: publish

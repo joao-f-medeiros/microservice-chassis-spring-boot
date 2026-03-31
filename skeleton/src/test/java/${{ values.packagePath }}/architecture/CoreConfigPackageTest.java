@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Configuration;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
-@AnalyzeClasses(packages = "{{ values.packageName }}")
+@AnalyzeClasses(packages = "{{ values.groupId }}.{{ values.packageName }}")
 public class CoreConfigPackageTest extends ArchitectureTest {
 
   @ArchTest
   public static final ArchRule configurationClassesShouldHaveConfigurationAnnotation = classes()
     .that()
-    .resideInAPackage(DOMAIN_LAYER_PACKAGES)
+    .resideInAPackage(CORE_CONFIG_LAYER_PACKAGES)
     .and()
     .haveSimpleNameEndingWith("Config")
     .should()

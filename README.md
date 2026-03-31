@@ -1,99 +1,80 @@
 # Microservice Chassis Spring Boot Archetype
 
-Primeiramente baixe o projeto. Logo após baixa-lo, no diretório raiz do projeto, execute o comando a seguir para que o
-projeto seja compilado e adicionado no seu repositorio local.
+Baixe o projeto e, no diretório raiz, execute o comando abaixo para compilar e instalar o archetype no repositório local Maven:
 
 ```shell
 mvn clean install
 ```
 
-Agora fora do diretório do projeto(em qualquer outro), com o comando a seguir podemos gerar um novo projeto no modo
-interativo com base no archetype construido acima.
+Fora do diretório do projeto, gere um novo microserviço com o comando:
 
 ```shell
-mvn -B archetype:generate \
-	-DarchetypeGroupId=com.microservice \
-	-DarchetypeArtifactId=archetype--microservice \
-	-DarchetypeVersion=0.0.1-SNAPSHOT \
-	-DgroupId=com.projuris \
-	-DartifactId=permission-service \
-	-Dversion=0.0.1-SNAPSHOT \
-	-DartifactIdToPackage=permissionservice
+mvn archetype:generate \
+  -DarchetypeGroupId=com.microservice \
+  -DarchetypeArtifactId=archetype--microservice \
+  -DarchetypeVersion=0.0.1-SNAPSHOT \
+  -DgroupId=com.projuris \
+  -DartifactId=payment-service \
+  -Dversion=0.0.1-SNAPSHOT \
+  -Dpackage=com.projuris \
+  -DinteractiveMode=false
 ```
+
+> **Importante**: o parâmetro `-Dpackage` deve receber **somente o `groupId`** (ex: `com.projuris`). O sufixo do pacote é derivado automaticamente do `artifactId`.
 
 Descritivo de cada propriedade:
 
-* **archetypeGroupId**: groupId do arquétipo maven a ser utilizado como base
-* **archetypeArtifactId**: artifactId do arquétipo maven a ser utilizado como base
-* **archetypeVersion**: versão do arquétipo maven a ser utilizado
-* **groupId**: groupId que será utilizado no projeto criado a partir do arquétipo
-* **artifactId**: artifactId que será utilizado no projeto criado a partir do arquétipo
-* **version**: versão inicial a ser utilizado no projeto cirado a partir do arquétipo
-* **artifactIdToPackage**: nome do pacote raiz a ser utilizado(veja abaixo os exemplos 1, 2 e 3).
-    * Por padrão este é um parâmetro obrigatório, caso nenhum valor for inserido, o nome do pacote raiz será o
-      artifactId(formatado contendo somente letras)
-    * Caso deseje criar subpackage para categorizar, utilize "/", ex: architecture/netflixhexagonal
+* **archetypeGroupId**: groupId do arquétipo Maven a ser utilizado como base
+* **archetypeArtifactId**: artifactId do arquétipo Maven a ser utilizado como base
+* **archetypeVersion**: versão do arquétipo Maven a ser utilizado
+* **groupId**: groupId que será utilizado no projeto criado
+* **artifactId**: artifactId que será utilizado no projeto criado (ex: `payment-service`)
+* **version**: versão inicial do projeto gerado
+* **package**: deve ser igual ao `groupId`. O pacote raiz do projeto será composto por `<package>.<artifactId-formatado>`, onde o artifactId é normalizado (somente letras minúsculas)
 
-# Exemplos
+# Estrutura gerada
 
-**Exemplo 1**: Utilizando `-DartifactIdToPackage=netflixhexagonalarchitecture`
+Dado `groupId=com.projuris` e `artifactId=payment-service`, o projeto gerado terá:
 
-```markdown
+* **Pacote raiz**: `com.projuris.paymentservice`
+* **Estrutura de diretórios**:
+
+```
 📦 src
 ┣ 📦 main
 ┃ ┣ 📦 java
-┃ ┃ ┣ 📦 dev
-┃ ┃ ┃ ┣ 📦 zevolution
-┃ ┃ ┃ ┃ ┣ 📦 netflixhexagonalarchitecture
-┃ ┃ ┃ ┃ ┃ ┣ 📂 adapter
-┃ ┃ ┃ ┃ ┃ ┣ 📂 bootstrap
-┃ ┃ ┃ ┃ ┃ ┣ 📂 internal
-┃ ┃ ┃ ┃ ┃ ┗ 📜 Application.java
+┃ ┃ ┗ 📦 com.projuris.paymentservice
+┃ ┃   ┣ 📂 adapter
+┃ ┃   ┃ ┣ 📂 inbound        (REST controllers, DTOs, mappers, config)
+┃ ┃   ┃ ┗ 📂 outbound       (repositórios, integrações, config)
+┃ ┃   ┣ 📂 core
+┃ ┃   ┃ ┣ 📂 config         (configurações Spring)
+┃ ┃   ┃ ┗ 📂 domain
+┃ ┃   ┃   ┣ 📂 entities
+┃ ┃   ┃   ┣ 📂 services
+┃ ┃   ┃   ┣ 📂 repositories
+┃ ┃   ┃   ┗ 📂 integrations
+┃ ┃   ┗ 📜 Application.java
 ┣ 📦 main/resources
-┣ 📜 .gitignore
-┣ 📜 Dockerfile
-┣ 📜 pom.xml
-┗ 📜 README.MD
+┃ ┣ 📜 bootstrap.yml
+┃ ┗ 📜 logback-spring.xml
+┗ 📦 test/java
+  ┗ 📦 com.projuris.paymentservice
+    ┣ 📂 adapter/inbound/rest  (testes de integração MockMvc)
+    ┗ 📂 architecture          (testes ArchUnit - validação hexagonal)
 ```
 
-**Exemplo 2**: Utilizando `-DartifactIdToPackage=architecture/netflixhexagonal`
+# Backstage / Scaffolder
 
-```markdown
-📦 src
-┣ 📦 main
-┃ ┣ 📦 java
-┃ ┃ ┣ 📦 dev
-┃ ┃ ┃ ┣ 📦 zevolution
-┃ ┃ ┃ ┃ ┣ 📦 architecture
-┃ ┃ ┃ ┃ ┃ ┣ 📦 netflixhexagonal
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 adapter
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 bootstrap
-┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 internal
-┃ ┃ ┃ ┃ ┃ ┃ ┗ 📜 Application.java
-┣ 📦 main/resources
-┣ 📜 .gitignore
-┣ 📜 Dockerfile
-┣ 📜 pom.xml
-┗ 📜 README.MD
-```
+O arquivo `template.yaml` contém a definição do template para uso no **Backstage Scaffolder**. Ele usa o diretório `./skeleton` como base e substitui as variáveis de template (`{{ values.* }}`).
 
-**Exemplo 3** : NÃO utlizando a propriedade `-DartifactIdToPackage` e passando `artifactId`
-como `-DartifactId=api--teste`. Veja que qualquer caracter diferente de a-z, será removido
+Parâmetros requeridos pelo template Backstage:
 
-```markdown
-📦 src
-┣ 📦 main
-┃ ┣ 📦 java
-┃ ┃ ┣ 📦 dev
-┃ ┃ ┃ ┣ 📦 zevolution
-┃ ┃ ┃ ┃ ┣ 📦 apiteste
-┃ ┃ ┃ ┃ ┃ ┣ 📂 adapter
-┃ ┃ ┃ ┃ ┃ ┣ 📂 bootstrap
-┃ ┃ ┃ ┃ ┃ ┣ 📂 internal
-┃ ┃ ┃ ┃ ┃ ┗ 📜 Application.java
-┣ 📦 main/resources
-┣ 📜 .gitignore
-┣ 📜 Dockerfile
-┣ 📜 pom.xml
-┗ 📜 README.MD
-```
+| Parâmetro | Descrição | Exemplo |
+|---|---|---|
+| `artifactId` | Nome do artefato Maven | `payment-service` |
+| `groupId` | Group ID Maven | `com.projuris` |
+| `description` | Descrição do serviço | - |
+| `squad` | Squad responsável | - |
+| `javaVersion` | Versão do JDK (`17` ou `21`) | `21` |
+| `repoUrl` | URL do repositório GitLab | - |
