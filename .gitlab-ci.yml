@@ -1,0 +1,28 @@
+include:
+  - project: 'softplan/legal/projuris-empresas/devsecops/pipelines-template'
+    ref: main
+    file: 'common-lib-java/.gitlab-ci.yml'
+
+default:
+  image: registry.gitlab.com/softplan/legal/projuris-empresas/devsecops/ci-tools-alpine-java-21/projuris-empresas/ci-tools-alpine-java-21:latest
+
+compile:
+  stage: compile
+  script:
+    - mvn clean install
+
+test:
+  stage: test
+  script:
+    - |
+      mkdir -p /tmp/archetype-test && cd /tmp/archetype-test
+      mvn archetype:generate \
+        -DarchetypeGroupId=com.microservice \
+        -DarchetypeArtifactId=archetype--microservice \
+        -DarchetypeVersion=0.0.1-SNAPSHOT \
+        -DgroupId=com.example \
+        -DartifactId=test-svc \
+        -Dpackage=com.example \
+        -DinteractiveMode=false
+      cd test-svc && mvn test
+
