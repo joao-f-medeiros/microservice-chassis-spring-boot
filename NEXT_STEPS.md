@@ -1,6 +1,6 @@
 # Próximos Passos
 
-> Estado atual: `main` com CI/CD configurado, `@MockitoBean` migrado. Build e 19 testes passando.
+> Estado atual: CI/CD integrado ao template corporativo, `distributionManagement` e `settings.xml` configurados para publicar no Nexus.
 
 ---
 
@@ -10,7 +10,12 @@
 
 ## ✅ 2. Pipeline CI/CD — concluído
 
-`.gitlab-ci.yml` criado com stages `build` e `test-generate`. Validado localmente: build OK, 19/19 testes passando no projeto gerado.
+`.gitlab-ci.yml` integrado ao template corporativo `common-lib-java` via `include: project:`.
+
+- Usa imagem Java 21: `ci-tools-alpine-java-21:latest` (sobrescreve o default Java 17 do template)
+- `compile` sobrescrito: `mvn clean install` (instala o archetype no `.m2` antes do `test`)
+- `test` sobrescrito: gera projeto a partir do archetype e roda `mvn test` em `/tmp/archetype-test/test-svc`
+- Herda do template: `default` (tags, cache `.m2`), `workflow.rules` (develop + MR), `sonar`, `develop_snapshot`, `branch_snapshot`, `build_e_deploy`, `secret-detection`
 
 ---
 
@@ -22,24 +27,11 @@ Migrado em:
 
 ---
 
-## 4. Publicar archetype em repositório Maven
+## ✅ 4. Publicar archetype em repositório Maven — concluído
 
-Hoje o archetype só funciona após `mvn install` local. Para uso em CI e no Backstage, precisa estar em um repositório remoto (Nexus/Artifactory).
+`settings.xml` criado com as credenciais dos servidores Nexus (padrão `projuris-domain`). O `build_e_deploy` do template detecta o arquivo automaticamente.
 
-Adicionar ao `pom.xml` raiz:
-
-```xml
-<distributionManagement>
-  <repository>
-    <id>releases</id>
-    <url>https://<seu-nexus>/repository/maven-releases/</url>
-  </repository>
-  <snapshotRepository>
-    <id>snapshots</id>
-    <url>https://<seu-nexus>/repository/maven-snapshots/</url>
-  </snapshotRepository>
-</distributionManagement>
-```
+> `distributionManagement` não está no `pom.xml` — deve ser configurado via `settings.xml` ou variável `-DaltDeploymentRepository` na pipeline.
 
 ---
 
