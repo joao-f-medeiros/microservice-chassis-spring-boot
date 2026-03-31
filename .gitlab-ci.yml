@@ -1,0 +1,21 @@
+stages:
+  - build
+  - test-generate
+
+build:
+  stage: build
+  script:
+    - mvn clean install
+
+test-generate:
+  stage: test-generate
+  script:
+    - mvn archetype:generate
+        -DarchetypeGroupId=com.microservice
+        -DarchetypeArtifactId=archetype--microservice
+        -DarchetypeVersion=0.0.1-SNAPSHOT
+        -DgroupId=com.example
+        -DartifactId=test-svc
+        -Dpackage=com.example
+        -DinteractiveMode=false
+    - cd test-svc && mvn test
