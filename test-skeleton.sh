@@ -21,6 +21,8 @@ echo "  packagePath : $PACKAGE_PATH"
 echo "  output      : $OUT_DIR"
 echo ""
 
+[ -d skeleton ] || { echo "ERROR: skeleton directory not found. Run this script from the project root."; exit 1; }
+
 rm -rf "$OUT_DIR"
 mkdir -p "$(dirname "$OUT_DIR")"
 cp -r skeleton "$OUT_DIR"
@@ -36,9 +38,12 @@ REAL_TEST_DIR="$OUT_DIR/src/test/java/$PACKAGE_PATH"
 mkdir -p "$(dirname "$REAL_TEST_DIR")"
 mv "$PLACEHOLDER_TEST_DIR" "$REAL_TEST_DIR"
 
-# Substitute template variables in all text files
+# Substitute template variables in all text files (portable: BSD and GNU sed)
+SED_INPLACE=(-i '')
+sed --version 2>/dev/null | grep -q GNU && SED_INPLACE=(-i)
+
 find "$OUT_DIR" -type f \( -name "*.java" -o -name "*.xml" -o -name "*.yaml" -o -name "*.yml" -o -name "*.md" \) | while read -r f; do
-  sed -i '' \
+  sed "${SED_INPLACE[@]}" \
     -e "s|{{ values.groupId }}|$GROUP_ID|g" \
     -e "s|{{ values.artifactId }}|$ARTIFACT_ID|g" \
     -e "s|{{ values.packageName }}|$PACKAGE_NAME|g" \
