@@ -37,13 +37,59 @@ Migrado em:
 
 ## 5. Validar template Backstage em ambiente real
 
-O `template.yaml` e o skeleton foram corrigidos e estão logicamente consistentes, mas não foram testados via Backstage Scaffolder. Validar antes de disponibilizar para os times.
+O `template.yaml` e o skeleton foram validados localmente via `test-skeleton.sh` (simula o `fetch:template` do Backstage). Falta concluir a validação via Scaffolder real.
 
 **Checklist:**
-- [ ] Importar `template.yaml` no Backstage de staging
-- [ ] Executar geração com `groupId=com.example` e `artifactId=my-test-service`
-- [ ] Verificar pacote gerado: deve ser `com.example.mytestservice` (sem duplicação)
-- [ ] Confirmar que o projeto gerado compila e os testes passam
+- [x] Simular geração com `groupId=com.example` e `artifactId=my-test-service` — `test-skeleton.sh`
+- [x] Verificar pacote gerado: `com.example.mytestservice` (sem duplicação) — OK
+- [x] Confirmar que o projeto gerado compila e os testes passam — 19 testes passando
+- [x] Corrigir `YAMLParseError` no `template.yaml` — descrições com `(ex: ...)` precisam de aspas
+- [ ] Push das correções e re-registrar no Backstage de staging
+- [ ] Preencher o formulário do Scaffolder e validar a geração completa
+
+### Como testar no Backstage local (porta 3000)
+
+**Pré-requisito:** integração GitLab configurada no `app-config.yaml` do Backstage para o step `publish:gitlab` funcionar:
+```yaml
+integrations:
+  gitlab:
+    - host: gitlab.com
+      token: ${GITLAB_TOKEN}
+```
+
+**1. Fazer push das correções:**
+```bash
+git add template.yaml
+git commit -m "fix: quote YAML descriptions containing colons"
+git push origin <branch>
+```
+
+**2. Registrar o template no Backstage:**
+- Acesse http://localhost:3000 → **Create** → **Register Existing Component**
+- Cole a URL raw do `template.yaml` no GitHub:
+  ```
+  https://raw.githubusercontent.com/joao-f-medeiros/microservice-chassis-spring-boot/<branch>/template.yaml
+  ```
+- Clique em **Analyze** → **Import**
+
+**3. Executar o Scaffolder:**
+- Volte para **Create** → selecione **"Microservice Spring Boot (Hexagonal)"**
+- Preencha com valores de teste:
+  - Artifact ID: `my-test-service`
+  - Group ID: `com.example`
+  - Java Version: `21`
+  - Repo URL: `gitlab.com` + qualquer owner/repo de teste
+
+**4. O que validar:**
+- Formulário renderiza sem erros de YAML
+- Skeleton é gerado com `package com.example.mytestservice` (sem duplicação)
+- Step `publish:gitlab` cria o repositório com sucesso
+
+### Erros conhecidos encontrados
+
+| Erro | Causa | Correção |
+|------|-------|----------|
+| `YAMLParseError: Nested mappings are not allowed in compact mappings` | `description:` com `(ex: ...)` — o `: ` é interpretado como mapeamento YAML | Colocar o valor entre aspas duplas |
 
 ---
 
