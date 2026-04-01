@@ -11,7 +11,7 @@ metadata:
     - microservice
     - kubernetes
 spec:
-  owner: platform-team
+  owner: group:platform-team
   type: service
 
   parameters:

@@ -49,7 +49,16 @@ O `template.yaml` e o skeleton foram validados localmente via `test-skeleton.sh`
 
 ### Como testar no Backstage local (porta 3000)
 
-**Pré-requisito:** integração GitLab configurada no `app-config.yaml` do Backstage para o step `publish:gitlab` funcionar:
+**Pré-requisitos no `app-config.yaml` do Backstage:**
+
+1. Liberar o kind `Template` no catálogo (sem isso: `NotAllowedError: is not of an allowed kind for that location`):
+```yaml
+catalog:
+  rules:
+    - allow: [Component, API, Resource, Location, Template, System, Domain, Group, User]
+```
+
+2. Integração GitLab para o step `publish:gitlab` funcionar:
 ```yaml
 integrations:
   gitlab:
@@ -90,6 +99,7 @@ git push origin <branch>
 | Erro | Causa | Correção |
 |------|-------|----------|
 | `YAMLParseError: Nested mappings are not allowed in compact mappings` | `description:` com `(ex: ...)` — o `: ` é interpretado como mapeamento YAML | Colocar o valor entre aspas duplas |
+| `NotAllowedError: is not of an allowed kind for that location` | `catalog.rules` do Backstage não inclui `Template` por padrão | Adicionar `Template` à lista `catalog.rules.allow` no `app-config.yaml` do Backstage |
 
 ---
 
