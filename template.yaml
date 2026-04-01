@@ -25,13 +25,13 @@ spec:
         artifactId:
           title: Artifact ID
           type: string
-          description: Nome do artefato Maven (ex: payment-service)
+          description: "Nome do artefato Maven (ex: payment-service)"
           pattern: '^[a-z][a-z0-9-]*$'
           ui:autofocus: true
         groupId:
           title: Group ID
           type: string
-          description: Group ID Maven (ex: com.projuris)
+          description: "Group ID Maven (ex: com.projuris)"
           default: com.projuris
         description:
           title: Descrição
@@ -44,7 +44,7 @@ spec:
         owner:
           title: Owner
           type: string
-          description: Owner do componente no Backstage (ex: group:platform-team)
+          description: "Owner do componente no Backstage (ex: group:platform-team)"
           ui:field: OwnerPicker
           ui:options:
             catalogFilter:
